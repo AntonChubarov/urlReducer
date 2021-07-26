@@ -5,9 +5,8 @@ type LinkStorage interface {
 	SaveInitialLinkToStorage(url string, id string) error
 }
 
-type Validator interface {
-	ValidateInitialURL(url string) bool
-	ValidateID(id string) bool
+type StringValidator interface {
+	Validate(string) bool
 }
 
 type Hasher interface {

@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-type LinkHasher struct {
+type RandomStringLinkHasher struct {
 	letterRunes []rune
 }
 
-func (l LinkHasher) Hash(url string, numOfSymbols int) (hash string) {
+func (l RandomStringLinkHasher) Hash(url string, numOfSymbols int) (hash string) {
 	h := fnv.New64a()
 	h.Write([]byte(url))
 	rand.Seed(int64(h.Sum64())-time.Now().UnixNano())
@@ -22,8 +22,8 @@ func (l LinkHasher) Hash(url string, numOfSymbols int) (hash string) {
 	return string(b)
 }
 
-func NewLinkHasher() *LinkHasher {
-	return &LinkHasher {
+func NewLinkHasher() *RandomStringLinkHasher {
+	return &RandomStringLinkHasher{
 		[]rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
 	}
 }

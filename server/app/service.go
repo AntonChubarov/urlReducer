@@ -2,55 +2,53 @@ package app
 
 import (
 	"server/domain"
-	"server/infrastructure/dal"
 )
 
-func SaveLink (request domain.Request) (domain.Response, error) {
-	linkValidator := NewLinkValidator()
+type Service struct{
+	LinkValidator domain.StringValidator
+	IDValidator domain.StringValidator
+	Hasher domain.Hasher
+	Storage domain.LinkStorage
+}
 
-	if !linkValidator.ValidateInitialURL(request.InitialURL) {
+func NewService(linkValidator domain.StringValidator,
+	idValidator domain.StringValidator,
+	hasher domain.Hasher,
+	storage domain.LinkStorage,
+) *Service {
+	return &Service{LinkValidator: linkValidator,
+		IDValidator: idValidator,
+		Hasher: hasher,
+		Storage: storage,
+	}
+}
+
+func (s *Service) SaveLink (request domain.Request) (domain.Response, error) {
+	if !s.LinkValidator.Validate(request.InitialURL) {
 		return domain.Response{}, domain.ErrorInvalidURL
 	}
 
-	linkHasher := NewLinkHasher()
+	id := s.Hasher.Hash(request.InitialURL, 7) // env
 
-	id := linkHasher.Hash(request.InitialURL, 7)
-
-	if !linkValidator.ValidateID(id) {
-		return domain.Response{}, domain.ErrorInternal
-	}
-
-	storage := dal.NewDatabaseConnector()
-
-	err := storage.SaveInitialLinkToStorage(request.InitialURL, id)
+	err := s.Storage.SaveInitialLinkToStorage(request.InitialURL, id)
 	if err != nil {
 		return domain.Response{}, domain.ErrorInternal
 	}
 
 	return domain.Response{
-		domain.WebHost + "/" + id,
+		URL: domain.WebHost + "/" + id,
 	}, nil
 }
 
-func GetLink (id string) (domain.Response, error) {
-	linkValidator := NewLinkValidator()
-
-	if !linkValidator.ValidateID(id) {
-		return domain.Response{}, domain.ErrorInvalidShortURL
+func (s *Service) GetLink (id string) (string, error) {
+	if !s.IDValidator.Validate(id) {
+		return "", domain.ErrorInvalidShortURL
 	}
 
-	storage := dal.NewDatabaseConnector()
-
-	initialLink, err := storage.GetInitialLinkFromStorage(id)
+	initialLink, err := s.Storage.GetInitialLinkFromStorage(id)
 	if err != nil {
-		return domain.Response{}, domain.ErrorInternal
+		return "", domain.ErrorInternal
 	}
 
-	if !linkValidator.ValidateInitialURL(initialLink) {
-		return domain.Response{}, domain.ErrorInternal
-	}
-
-	return domain.Response{
-		initialLink,
-	}, nil
+	return initialLink, nil
 }

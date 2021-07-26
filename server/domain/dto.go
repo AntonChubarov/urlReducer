@@ -8,7 +8,7 @@ type Response struct {
 	URL string `json:"url"`
 }
 
-type UrlDTO struct {
-	Id string `db:"hash"`
+type URLDTO struct {
+	ID         string `db:"hash"`
 	InitialURL string `db:"initial_url"`
 }
