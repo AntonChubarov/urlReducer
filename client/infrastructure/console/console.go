@@ -9,11 +9,10 @@ import (
 	"strings"
 )
 
-type consoleUI struct {}
+type UIConsole struct {}
 
-func (c *consoleUI) GetCommand() string {
-	fmt.Println("To get short link use command \"red\" (example: red https://www.somesite.com/somethingelse)")
-	fmt.Println("To get full link using short one use command \"get\" (example: get "+ domain.WebHost +"/cFiuRTe)")
+func (c *UIConsole) GetCommand() string {
+	fmt.Println("To get short link use command \"reduce\" (example: reduce https://www.somesite.com/somethingelse)")
 	fmt.Println("To open destination using short link use command \"open\" (example: open" + domain.WebHost + "/cFiuRTe)")
 
 	reader := bufio.NewReader(os.Stdin)
@@ -27,10 +26,10 @@ func (c *consoleUI) GetCommand() string {
 	return text
 }
 
-func (c *consoleUI) ShowMessage(message string) {
+func (c *UIConsole) ShowMessage(message string) {
 	fmt.Println(message)
 }
 
-func NewConsoleUI() *consoleUI {
-	return &consoleUI{}
+func NewConsoleUI() *UIConsole {
+	return &UIConsole{}
 }

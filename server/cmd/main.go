@@ -3,20 +3,22 @@ package main
 import (
 	"github.com/labstack/echo/v4"
 	"server/app"
-	"server/domain"
+	"server/config"
 	"server/infrastructure/dal"
 	"server/infrastructure/httpcontrollers"
 )
 
 func main() {
-	config := domain.NewServerConfig()
+	sConfig := config.NewServerConfig()
 
-	linkValidator := app.NewLinkValidator(config)
+	linkValidator := app.NewLinkValidator()
 	idValidator := app.NewIDValidator()
-	hasher := app.NewLinkHasher()
-	storage := dal.NewDatabaseConnector()
+	hasher := app.NewLinkHasher(sConfig)
 
-	service := app.NewService(linkValidator, idValidator, hasher, storage)
+	storage := dal.NewDatabaseConnector(sConfig)
+	defer storage.CloseDatabaseConnection()
+
+	service := app.NewService(linkValidator, idValidator, hasher, storage, sConfig)
 
 	getController := httpcontrollers.NewGetController(service)
 	postController := httpcontrollers.NewPostController(service)
@@ -24,5 +26,5 @@ func main() {
 	e := echo.New()
 	e.GET("/:id", getController.Get)
 	e.POST("/", postController.Post)
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(sConfig.Host.ServerStartPort))
 }

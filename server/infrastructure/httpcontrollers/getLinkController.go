@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"server/app"
+	"server/domain"
 )
 
 type GetController struct {
@@ -17,12 +18,16 @@ func NewGetController(service *app.Service) *GetController {
 
 func (g *GetController) Get(c echo.Context) error {
 	id := c.Param("id")
-	var initialLink string
+	var response domain.Response
 	var err error
-	if initialLink, err = g.Service.GetLink(id); err != nil {
+	if response, err = g.Service.GetLink(id); err != nil {
 		log.Println(err)
 		return c.String(http.StatusBadRequest, err.Error())
 	}
-	c.Redirect(http.StatusSeeOther, initialLink)
+	err = c.Redirect(http.StatusSeeOther, response.URL)
+	if err != nil {
+		log.Println(err)
+		return c.String(http.StatusBadRequest, err.Error())
+	}
 	return nil
 }

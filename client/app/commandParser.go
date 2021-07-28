@@ -5,9 +5,9 @@ import (
 	"strings"
 )
 
-type commandParser struct {}
+type CommandParser struct {}
 
-func (c *commandParser) Parse(input string) (string, string, error) {
+func (c *CommandParser) Parse(input string) (command, content string, err error) {
 	input = strings.Trim(input, " ")
 
 	spaceCount := strings.Count(input, " ")
@@ -21,6 +21,6 @@ func (c *commandParser) Parse(input string) (string, string, error) {
 	return splitted[0], splitted[1], nil
 }
 
-func NewCommandParser() *commandParser {
-	return &commandParser{}
+func NewCommandParser() *CommandParser {
+	return &CommandParser{}
 }

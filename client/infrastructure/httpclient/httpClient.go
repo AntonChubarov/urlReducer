@@ -1,4 +1,4 @@
-package httpClient
+package httpclient
 
 import (
 	"client/domain"
@@ -11,19 +11,19 @@ import (
 	"strconv"
 )
 
-type httpClient struct {
+type HTTPClient struct {
 	client *resty.Client
 }
 
-func NewHttpClient() *httpClient {
-	return &httpClient{
+func NewHTTPClient() *HTTPClient {
+	return &HTTPClient{
 		resty.New(),
 	}
 }
 
-func (h *httpClient) ReduceURL(url string) string {
+func (h *HTTPClient) ReduceURL(url string) string {
 	request := domain.Request{
-		url,
+		InitialURL: url,
 	}
 
 	var response domain.Response
@@ -41,7 +41,7 @@ func (h *httpClient) ReduceURL(url string) string {
 	return response.URL
 }
 
-func (h *httpClient) RestoreURL(url string) string {
+func (h *HTTPClient) RestoreURL(url string) string {
 	var response domain.Response
 
 	resp, err:= h.client.R().SetResult(&response).Get(url)
@@ -50,12 +50,11 @@ func (h *httpClient) RestoreURL(url string) string {
 	}
 	if resp.IsSuccess() {
 		return response.URL
-	} else {
-		return resp.RawResponse.Status
 	}
+	return resp.RawResponse.Status
 }
 
-func (h *httpClient) OpenBrowser(url string) {
+func (h *HTTPClient) OpenBrowser(url string) {
 	var err error
 	switch runtime.GOOS {
 	case "linux":

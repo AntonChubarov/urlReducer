@@ -10,5 +10,5 @@ type StringValidator interface {
 }
 
 type Hasher interface {
-	Hash(url string, numOfSymbols int) (hash string)
+	Hash(url string) (hash string)
 }

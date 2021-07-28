@@ -3,21 +3,20 @@ package app
 import (
 	"log"
 	"regexp"
-	"server/domain"
 )
 
+const urlRegex = "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)"
+
 type LinkValidator struct {
-	URLRegex string
+
 }
 
-func NewLinkValidator(config domain.ServerConfig) *LinkValidator {
-	return &LinkValidator{
-		URLRegex: config.URLRegex,
-	}
+func NewLinkValidator() *LinkValidator {
+	return &LinkValidator{}
 }
 
 func (l *LinkValidator) Validate(url string) bool {
-	isValid, err := regexp.MatchString(l.URLRegex, url)
+	isValid, err := regexp.MatchString(urlRegex, url)
 	if err != nil {
 		log.Println(err)
 	}

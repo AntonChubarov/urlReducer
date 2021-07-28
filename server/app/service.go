@@ -1,6 +1,7 @@
 package app
 
 import (
+	"server/config"
 	"server/domain"
 )
 
@@ -9,17 +10,20 @@ type Service struct{
 	IDValidator domain.StringValidator
 	Hasher domain.Hasher
 	Storage domain.LinkStorage
+	Config *config.ServerConfig
 }
 
 func NewService(linkValidator domain.StringValidator,
 	idValidator domain.StringValidator,
 	hasher domain.Hasher,
 	storage domain.LinkStorage,
+	sConfig *config.ServerConfig,
 ) *Service {
 	return &Service{LinkValidator: linkValidator,
 		IDValidator: idValidator,
-		Hasher: hasher,
-		Storage: storage,
+		Hasher:      hasher,
+		Storage:     storage,
+		Config:      sConfig,
 	}
 }
 
@@ -28,7 +32,7 @@ func (s *Service) SaveLink (request domain.Request) (domain.Response, error) {
 		return domain.Response{}, domain.ErrorInvalidURL
 	}
 
-	id := s.Hasher.Hash(request.InitialURL, 7) // env
+	id := s.Hasher.Hash(request.InitialURL) // env
 
 	err := s.Storage.SaveInitialLinkToStorage(request.InitialURL, id)
 	if err != nil {
@@ -36,19 +40,19 @@ func (s *Service) SaveLink (request domain.Request) (domain.Response, error) {
 	}
 
 	return domain.Response{
-		URL: domain.WebHost + "/" + id,
+		URL: s.Config.Host.ServerHost + s.Config.Host.ServerStartPort + "/" + id,
 	}, nil
 }
 
-func (s *Service) GetLink (id string) (string, error) {
+func (s *Service) GetLink (id string) (domain.Response, error) {
 	if !s.IDValidator.Validate(id) {
-		return "", domain.ErrorInvalidShortURL
+		return domain.Response{}, domain.ErrorInvalidShortURL
 	}
 
 	initialLink, err := s.Storage.GetInitialLinkFromStorage(id)
 	if err != nil {
-		return "", domain.ErrorInternal
+		return domain.Response{}, domain.ErrorInternal
 	}
 
-	return initialLink, nil
+	return domain.Response{URL: initialLink}, nil
 }

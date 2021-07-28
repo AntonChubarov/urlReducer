@@ -1,9 +1,5 @@
 package domain
 
-type Validator interface {
-	Validate(string) bool
-}
-
 type Parser interface {
 	Parse(string) (string, string, error)
 }

@@ -5,16 +5,18 @@ import (
 	"regexp"
 )
 
-type IDValidator struct {}
+const idRegex = "^[a-zA-Z0-9]*$"
 
-const idRegEx = "^[a-zA-Z0-9]*$"
+type IDValidator struct {
+
+}
 
 func NewIDValidator() *IDValidator {
 	return &IDValidator{}
 }
 
-func (l *IDValidator) Validate(id string) bool {
-	isValid, err := regexp.MatchString(idRegEx, id)
+func (i *IDValidator) Validate(id string) bool {
+	isValid, err := regexp.MatchString(idRegex, id)
 	if err != nil {
 		log.Println(err)
 	}

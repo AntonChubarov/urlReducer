@@ -3,16 +3,15 @@ package main
 import (
 	"client/app"
 	"client/infrastructure/console"
-	"client/infrastructure/httpClient"
+	"client/infrastructure/httpclient"
 )
 
 func main() {
 	userInterface := console.NewConsoleUI()
 	commandParser := app.NewCommandParser()
-	linkValidator := app.NewLinkValidator()
-	client := httpClient.NewHttpClient()
+	client := httpclient.NewHTTPClient()
 
-	service := app.NewService(userInterface, commandParser, linkValidator, client)
+	service := app.NewService(userInterface, commandParser, client)
 
 	service.Run()
 }

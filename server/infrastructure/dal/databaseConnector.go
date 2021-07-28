@@ -2,34 +2,28 @@ package dal
 
 import (
 	"fmt"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres" // for migrations?
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // for database connections?
 	"log"
+	"server/config"
 	"server/domain"
 )
-
-const host = "localhost"
-const port = 5432
-const user = "postgres"
-const password = "Cc030789"
-const dbname = "postgres"
 
 type DatabaseConnector struct {
 	Database *sqlx.DB
 }
 
-func NewDatabaseConnector() *DatabaseConnector {
+func NewDatabaseConnector(sConfig *config.ServerConfig) *DatabaseConnector {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+		sConfig.Database.DBHost, sConfig.Database.DBPort, sConfig.Database.DBUser,
+		sConfig.Database.DBPassword, sConfig.Database.DBName)
 
 	db, err := sqlx.Connect("postgres", psqlInfo)
 	if err != nil {
 		panic(err)
 	}
-
-	//defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
@@ -40,7 +34,7 @@ func NewDatabaseConnector() *DatabaseConnector {
 	//runDBMigrate("postgres://postgres:Cc030789@localhost:5432/testdb?sslmode=disable", s)
 
 	return &DatabaseConnector{
-		db,
+		Database: db,
 	}
 }
 
@@ -68,6 +62,13 @@ func (d *DatabaseConnector) SaveInitialLinkToStorage(url, id string) error {
 	}
 
 	return nil
+}
+
+func (d *DatabaseConnector) CloseDatabaseConnection() {
+	err := d.Database.Close()
+	if err != nil {
+		log.Println(err)
+	}
 }
 
 //func runDBMigrate(dsn string, source *bindata.AssetSource)  {
