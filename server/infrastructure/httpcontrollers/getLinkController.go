@@ -4,14 +4,14 @@ import (
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
-	"server/app"
+	"server/domain"
 )
 
 type GetController struct {
-	Service *app.Service
+	Service domain.IService
 }
 
-func NewGetController(service *app.Service) *GetController {
+func NewGetController(service domain.IService) *GetController {
 	return &GetController{Service: service}
 }
 

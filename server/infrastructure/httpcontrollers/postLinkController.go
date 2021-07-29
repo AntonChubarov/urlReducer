@@ -4,15 +4,14 @@ import (
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
-	"server/app"
 	"server/domain"
 )
 
 type PostController struct {
-	Service *app.Service
+	Service domain.IService
 }
 
-func NewPostController(service *app.Service) *PostController {
+func NewPostController(service domain.IService) *PostController {
 	return &PostController{Service: service}
 }
 
