@@ -27,32 +27,30 @@ func NewService(linkValidator domain.StringValidator,
 	}
 }
 
-func (s *Service) SaveLink (request domain.Request) (domain.Response, error) {
-	if !s.LinkValidator.Validate(request.InitialURL) {
-		return domain.Response{}, domain.ErrorInvalidURL
+func (s *Service) SaveLink (url string) (string, error) {
+	if !s.LinkValidator.Validate(url) {
+		return "", domain.ErrorInvalidURL
 	}
 
-	id := s.Hasher.Hash(request.InitialURL) // env
+	id := s.Hasher.Hash(url) // env
 
-	err := s.Storage.SaveInitialLinkToStorage(request.InitialURL, id)
+	err := s.Storage.SaveInitialLinkToStorage(url, id)
 	if err != nil {
-		return domain.Response{}, domain.ErrorInternal
+		return "", domain.ErrorInternal
 	}
 
-	return domain.Response{
-		URL: s.Config.Host.ServerHost + s.Config.Host.ServerStartPort + "/" + id,
-	}, nil
+	return s.Config.Host.ServerHost + s.Config.Host.ServerStartPort + "/" + id, nil
 }
 
-func (s *Service) GetLink (id string) (domain.Response, error) {
+func (s *Service) GetLink (id string) (string, error) {
 	if !s.IDValidator.Validate(id) {
-		return domain.Response{}, domain.ErrorInvalidShortURL
+		return "", domain.ErrorInvalidShortURL
 	}
 
-	initialLink, err := s.Storage.GetInitialLinkFromStorage(id)
+	initialURL, err := s.Storage.GetInitialLinkFromStorage(id)
 	if err != nil {
-		return domain.Response{}, domain.ErrorInternal
+		return "", domain.ErrorInternal
 	}
 
-	return domain.Response{URL: initialLink}, nil
+	return initialURL, nil
 }

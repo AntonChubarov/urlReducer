@@ -25,11 +25,11 @@ func (p *PostController) Post(c echo.Context) error {
 		return echo.ErrBadRequest
 	}
 
-	response, err := p.Service.SaveLink(request)
+	shortURL, err := p.Service.SaveLink(request.InitialURL)
 	if err != nil {
 		log.Println(err)
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, domain.Response{URL: shortURL})
 }
