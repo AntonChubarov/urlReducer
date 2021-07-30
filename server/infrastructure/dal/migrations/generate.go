@@ -1,3 +1,3 @@
 package migrations
 
-//go:generate go-bindata -pkg migrations -o bindata.go
+//go:generate go-bindata -pkg migrations -o bindata.go  .

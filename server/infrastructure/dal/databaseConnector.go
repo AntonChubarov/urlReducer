@@ -30,9 +30,6 @@ func NewDatabaseConnector(sConfig *config.ServerConfig) *DatabaseConnector {
 		panic(err)
 	}
 
-	//s:=bindata.Resource(migrations.AssetNames(), migrations.Asset)
-	//runDBMigrate("postgres://postgres:Cc030789@localhost:5432/testdb?sslmode=disable", s)
-
 	return &DatabaseConnector{
 		Database: db,
 	}
@@ -70,23 +67,3 @@ func (d *DatabaseConnector) CloseDatabaseConnection() {
 		log.Println(err)
 	}
 }
-
-//func runDBMigrate(dsn string, source *bindata.AssetSource)  {
-//	d, err := bindata.WithInstance(source)
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	m, err := migrate.NewWithSourceInstance("go-bindata", d, dsn)
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	if err = m.Up(); err != nil {
-//		if err == migrate.ErrNoChange {
-//			fmt.Println(err)
-//		} else {
-//			panic(err)
-//		}
-//	}
-//}
